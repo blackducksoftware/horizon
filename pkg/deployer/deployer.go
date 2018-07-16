@@ -153,6 +153,12 @@ func (d *Deployer) AddNamespace(obj *components.Namespace) {
 	d.namespaces[obj.GetName()] = obj.GetObj()
 }
 
+// AddServiceAccount will add the provided service account to the
+// service accounts that will be deployed
+func (d *Deployer) AddServiceAccount(obj *components.ServiceAccount) {
+	d.serviceAccounts[obj.GetName()] = obj.GetObj()
+}
+
 // Run starts the deployer and deploys all components to the cluster
 func (d *Deployer) Run() error {
 	allErrs := map[util.ComponentType][]error{}
