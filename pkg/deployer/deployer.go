@@ -22,15 +22,18 @@ under the License.
 package deployer
 
 import (
-	"github.com/blackducksoftware/cn-crd-controller/pkg/api"
-	"github.com/blackducksoftware/cn-crd-controller/pkg/types"
-	"github.com/blackducksoftware/cn-crd-controller/pkg/utils"
-	utilserror "github.com/blackducksoftware/cn-crd-controller/pkg/utils/error"
+	"fmt"
+
+	"github.com/blackducksoftware/horizon/pkg/api"
+	"github.com/blackducksoftware/horizon/pkg/components"
+	"github.com/blackducksoftware/horizon/pkg/util"
+	utilserror "github.com/blackducksoftware/horizon/pkg/util/error"
 
 	"github.com/koki/short/converter/converters"
 	shorttypes "github.com/koki/short/types"
 
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 
 	extensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 
@@ -58,10 +61,22 @@ type Deployer struct {
 }
 
 // NewDeployer creates a Deployer object
-func NewDeployer(client *kubernetes.Clientset, apiextensions *extensionsclient.Clientset) *Deployer {
+func NewDeployer(kubeconfig *rest.Config) (*Deployer, error) {
+	// creates the client
+	client, err := kubernetes.NewForConfig(kubeconfig)
+	if err != nil {
+		return nil, fmt.Errorf("error creating the kubernetes client: %v", err)
+	}
+
+	// creates the extensions client
+	extensions, err := extensionsclient.NewForConfig(kubeconfig)
+	if err != nil {
+		return nil, fmt.Errorf("error creating the kubernetes api extensions client: %v", err)
+	}
+
 	d := Deployer{
 		client:                 client,
-		apiextensions:          apiextensions,
+		apiextensions:          extensions,
 		replicationControllers: make(map[string]*shorttypes.ReplicationController),
 		pods:                make(map[string]*shorttypes.Pod),
 		configMaps:          make(map[string]*shorttypes.ConfigMap),
@@ -75,7 +90,7 @@ func NewDeployer(client *kubernetes.Clientset, apiextensions *extensionsclient.C
 		namespaces:          make(map[string]*shorttypes.Namespace),
 		controllers:         make(map[string]api.DeployerControllerInterface),
 	}
-	return &d
+	return &d, nil
 }
 
 // AddController will add a custom controller that will be run after all
@@ -86,75 +101,75 @@ func (d *Deployer) AddController(name string, c api.DeployerControllerInterface)
 
 // AddConfigMap will add the provided config map to the config maps
 // that will be deployed
-func (d *Deployer) AddConfigMap(obj *types.ConfigMap) {
+func (d *Deployer) AddConfigMap(obj *components.ConfigMap) {
 	d.configMaps[obj.GetName()] = obj.GetObj()
 }
 
 // AddDeployment will add the provided deployment to the deployments
 // that will be deployed
-func (d *Deployer) AddDeployment(obj *types.Deployment) {
+func (d *Deployer) AddDeployment(obj *components.Deployment) {
 	d.deployments[obj.GetName()] = obj.GetObj()
 }
 
 // AddService will add the provided service to the services
 // that will be deployed
-func (d *Deployer) AddService(obj *types.Service) {
+func (d *Deployer) AddService(obj *components.Service) {
 	d.services[obj.GetName()] = obj.GetObj()
 }
 
 // AddSecret will add the provided secret to the secrets
 // that will be deployed
-func (d *Deployer) AddSecret(obj *types.Secret) {
+func (d *Deployer) AddSecret(obj *components.Secret) {
 	d.secrets[obj.GetName()] = obj.GetObj()
 }
 
 // AddClusterRole will add the provided cluster role to the
 // cluster roles that will be deployed
-func (d *Deployer) AddClusterRole(obj *types.ClusterRole) {
+func (d *Deployer) AddClusterRole(obj *components.ClusterRole) {
 	d.clusterRoles[obj.GetName()] = obj.GetObj()
 }
 
 // AddClusterRoleBinding will add the provided cluster role binding
 // to the cluster role bindings that will be deployed
-func (d *Deployer) AddClusterRoleBinding(obj *types.ClusterRoleBinding) {
+func (d *Deployer) AddClusterRoleBinding(obj *components.ClusterRoleBinding) {
 	d.clusterRoleBindings[obj.GetName()] = obj.GetObj()
 }
 
 // AddCustomDefinedResource will add the provided custom defined resource
 // to the custom defined resources that will be deployed
-func (d *Deployer) AddCustomDefinedResource(obj *types.CustomResourceDefinition) {
+func (d *Deployer) AddCustomDefinedResource(obj *components.CustomResourceDefinition) {
 	d.crds[obj.GetName()] = obj.GetObj()
 }
 
-// AddReplicationConroller will add the provided replication controller
+// AddReplicationController will add the provided replication controller
 // to the replication controllers that will be deployed
-func (d *Deployer) AddReplicationConroller(obj *types.ReplicationController) {
+func (d *Deployer) AddReplicationController(obj *components.ReplicationController) {
 	d.replicationControllers[obj.GetName()] = obj.GetObj()
 }
 
 // AddNamespace will add the provided namespace to the
 // namespaces that will be deployed
-func (d *Deployer) AddNamespace(obj *types.Namespace) {
+func (d *Deployer) AddNamespace(obj *components.Namespace) {
 	d.namespaces[obj.GetName()] = obj.GetObj()
 }
 
 // Run starts the deployer and deploys all components to the cluster
 func (d *Deployer) Run() error {
-	allErrs := map[utils.ComponentType][]error{}
+	allErrs := map[util.ComponentType][]error{}
 
 	err := d.deployNamespaces()
 	if len(err) > 0 {
-		allErrs[utils.NamespaceComponent] = err
+		allErrs[util.NamespaceComponent] = err
 	}
 
 	err = d.deployCRDs()
 	if len(err) > 0 {
-		allErrs[utils.CRDComponent] = err
+		allErrs[util.CRDComponent] = err
 	}
 
 	err = d.deployServiceAccounts()
 	if len(err) > 0 {
-		allErrs[utils.ServiceAccountComponent] = err
+		allErrs[util.ServiceAccountComponent] = err
 	}
 
 	errMap := d.deployRBAC()
@@ -166,32 +181,32 @@ func (d *Deployer) Run() error {
 
 	err = d.deployConfigMaps()
 	if len(err) > 0 {
-		allErrs[utils.ConfigMapComponent] = err
+		allErrs[util.ConfigMapComponent] = err
 	}
 
 	err = d.deploySecrets()
 	if len(err) > 0 {
-		allErrs[utils.SecretComponent] = err
+		allErrs[util.SecretComponent] = err
 	}
 
 	err = d.deployReplicationControllers()
 	if len(err) > 0 {
-		allErrs[utils.ReplicationControllerComponent] = err
+		allErrs[util.ReplicationControllerComponent] = err
 	}
 
 	err = d.deployPods()
 	if len(err) > 0 {
-		allErrs[utils.PodComponent] = err
+		allErrs[util.PodComponent] = err
 	}
 
 	err = d.deployDeployments()
 	if len(err) > 0 {
-		allErrs[utils.DeploymentComponent] = err
+		allErrs[util.DeploymentComponent] = err
 	}
 
 	err = d.deployServices()
 	if len(err) > 0 {
-		allErrs[utils.ServiceComponent] = err
+		allErrs[util.ServiceComponent] = err
 	}
 
 	return utilserror.NewDeployErrors(allErrs)
@@ -264,19 +279,19 @@ func (d *Deployer) deployServiceAccounts() []error {
 	return errs
 }
 
-func (d *Deployer) deployRBAC() map[utils.ComponentType][]error {
-	errs := map[utils.ComponentType][]error{}
+func (d *Deployer) deployRBAC() map[util.ComponentType][]error {
+	errs := map[util.ComponentType][]error{}
 
 	for name, crObj := range d.clusterRoles {
 		wrapper := &shorttypes.ClusterRoleWrapper{ClusterRole: *crObj}
 		cr, err := converters.Convert_Koki_ClusterRole_to_Kube(wrapper)
 		if err != nil {
-			errs[utils.ClusterRoleComponent] = append(errs[utils.ClusterRoleComponent], err)
+			errs[util.ClusterRoleComponent] = append(errs[util.ClusterRoleComponent], err)
 		}
 		log.Infof("Creating cluster role %s", name)
 		_, err = d.client.Rbac().ClusterRoles().Create(cr)
 		if err != nil {
-			errs[utils.ClusterRoleComponent] = append(errs[utils.ClusterRoleComponent], err)
+			errs[util.ClusterRoleComponent] = append(errs[util.ClusterRoleComponent], err)
 		}
 	}
 
@@ -284,12 +299,12 @@ func (d *Deployer) deployRBAC() map[utils.ComponentType][]error {
 		wrapper := &shorttypes.ClusterRoleBindingWrapper{ClusterRoleBinding: *crbObj}
 		crb, err := converters.Convert_Koki_ClusterRoleBinding_to_Kube(wrapper)
 		if err != nil {
-			errs[utils.ClusterRoleBindingComponent] = append(errs[utils.ClusterRoleComponent], err)
+			errs[util.ClusterRoleBindingComponent] = append(errs[util.ClusterRoleComponent], err)
 		}
 		log.Infof("Creating cluster role binding %s", name)
 		_, err = d.client.Rbac().ClusterRoleBindings().Create(crb)
 		if err != nil {
-			errs[utils.ClusterRoleBindingComponent] = append(errs[utils.ClusterRoleComponent], err)
+			errs[util.ClusterRoleBindingComponent] = append(errs[util.ClusterRoleComponent], err)
 		}
 	}
 	return errs

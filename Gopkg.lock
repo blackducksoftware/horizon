@@ -2,17 +2,6 @@
 
 
 [[projects]]
-  branch = "master"
-  name = "github.com/blackducksoftware/cn-crd-controller"
-  packages = [
-    "pkg/api",
-    "pkg/types",
-    "pkg/utils",
-    "pkg/utils/error"
-  ]
-  revision = "1aab56bb1d1198d766164bf52bb6bcc529dcb44c"
-
-[[projects]]
   name = "github.com/ghodss/yaml"
   packages = ["."]
   revision = "0ca9ea5df5451ffdf184b4428c902747c2c11cd7"
@@ -375,6 +364,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f2f72750bb83a163e66740f8702e319e7fd74b194364b218941aebf6d025a401"
+  inputs-digest = "6b04e2b844135cb5aead9e1c4a27b363e57ad5a5bc7920bd905383487f006704"
   solver-name = "gps-cdcl"
   solver-version = 1
