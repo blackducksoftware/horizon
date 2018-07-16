@@ -26,7 +26,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/blackducksoftware/cn-crd-controller/pkg/api"
+	"github.com/blackducksoftware/horizon/pkg/api"
 )
 
 type errorController struct {
