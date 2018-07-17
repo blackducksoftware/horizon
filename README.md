@@ -2,28 +2,28 @@
 
 Horizon is an application framwork for horizontal scaling, monitoring, and terse descriptions of complex, distributed systems running in a Cloud Native environment.
 
-# Why another kubernetes application framework ? 
+# Why another Kubernetes application framework? 
 
-Horizon was built based on ideas from the CoreOS operators framework, the Coki (short) framework for succinct kubernetes app definitions, and blackduck's 'protoform' framework for imperative deployment of the perceptor platform.
+Horizon was built based on ideas from the CoreOS operators framework, the Coki (short) framework for succinct Kubernetes app definitions, and Black Duck's 'protoform' framework for imperative deployment of the Perceptor platform.
 
-It doesn't represent a competitor to any of the above platforms, but rather, an opinionated cloud native deployment platform which is aligned with a proscriptive model for how one would define, and maintain, a distributed application in a kubernetes or openshift environment.
+It doesn't represent a competitor to any of the above platforms, but rather, an opinionated cloud-native deployment platform that is aligned with a proscriptive model for how one would define, and maintain, a distributed application in a Kubernetes or OpenShift environment.
 
-# Why would I use Horizon instead of YAML, Helm, ...
+# Why would I use Horizon instead of YAML or Helm?
 
-- Horizon apps replaces the need to create and provide yaml or json files for the application.   
+- Horizon apps replace the need to create and provide YAML or JSON files for the application.   
 - Horizon apps are unit testable.
-- Horizon apps embed operator like semantics, from the beggining, so they don't need to be layered after the fact.
-- Horizon apps give you a deployment mechanism that are human readable, without redundant schema, formatting.
-- Horizon apps are embeddalbe as a library.
-- Horizon apps ship with a prometheus implementation (this is coming soon).
-- Horizon apps enforce an idiom wherein you to ship exactly one container, and only one container.
+- Horizon apps embed operator-like semantics, from the beggining, so they don't need to be layered after the fact.
+- Horizon apps give you a deployment mechanism that is human readable, without redundant schema formatting.
+- Horizon apps are embeddable as a library.
+- Horizon apps ship with a Prometheus implementation (coming soon).
+- Horizon apps enforce an idiom wherein you ship exactly one container, and only one container.
 - Horizon apps separate the *creation* of your app from the *maintainance* of it over time, rather then forcing you to conform to watch semantics (as a raw controller or operator would do).
 
-# How does it work ?
+# How do I use it?
 
-- Vendor horizon into your golang app.
-- Programmatically define an application that will be deployed to a kubernetes based cluster using the objects we provide, using the objects in this repository.  
-- Start the horizon deployer from inside your own golang based container.
+- Vendor Horizon into your Golang app.
+- Programmatically define an application that will be deployed to a Kubernetes-based cluster using the objects we provide, using the objects in this repository.  
+- Start the Horizon deployer from inside your own Golang-based container.
 - Optionally send a controller that will be run after all defined parts of the application are deployed succesfully.
 
 ## License
