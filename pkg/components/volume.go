@@ -44,14 +44,19 @@ func (v *Volume) GetObj() *types.Volume {
 
 // NewEmptyDirVolume creates an EmptyDir volume object
 func NewEmptyDirVolume(config api.EmptyDirVolumeConfig) (*Volume, error) {
-	size, err := resource.ParseQuantity(config.SizeLimit)
-	if err != nil {
-		return nil, fmt.Errorf("invalid size: %v", err)
+	var size *resource.Quantity
+
+	if len(config.SizeLimit) > 0 {
+		s, err := resource.ParseQuantity(config.SizeLimit)
+		if err != nil {
+			return nil, fmt.Errorf("invalid size: %v", err)
+		}
+		size = &s
 	}
 
 	v := &types.Volume{
 		EmptyDir: &types.EmptyDirVolume{
-			SizeLimit: &size,
+			SizeLimit: size,
 		},
 	}
 
