@@ -230,8 +230,8 @@ func (d *Deployer) StartControllers(stopCh chan struct{}) map[string][]error {
 	// Run the controllers if there are any configured
 	if len(d.controllers) > 0 {
 		resources := api.ControllerResources{
-			kubeClient:           d.client,
-			kubeExtensionsClient: d.apiextensions,
+			KubeClient:           d.client,
+			KubeExtensionsClient: d.apiextensions,
 		}
 		errCh := make(chan map[string]error)
 		for n, c := range d.controllers {
