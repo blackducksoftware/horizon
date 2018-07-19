@@ -29,8 +29,8 @@ import (
 
 // ControllerResources defines the resources the deployer will provide controllers
 type ControllerResources struct {
-	kubeClient           *kubernetes.Clientset
-	kubeExtensionsClient *extensionsclient.Clientset
+	KubeClient           *kubernetes.Clientset
+	KubeExtensionsClient *extensionsclient.Clientset
 }
 
 // DeployerControllerInterface defines the interface for controllers
