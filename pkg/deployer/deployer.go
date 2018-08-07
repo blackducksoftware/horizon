@@ -499,19 +499,34 @@ func (d *Deployer) deployPVCs() []error {
 func (d *Deployer) Undeploy() error {
 	allErrs := map[util.ComponentType][]error{}
 
-	err := d.undeployNamespaces()
+	err := d.undeployServices()
 	if len(err) > 0 {
-		allErrs[util.NamespaceComponent] = err
+		allErrs[util.ServiceComponent] = err
 	}
 
-	err = d.undeployCRDs()
+	err = d.undeployDeployments()
 	if len(err) > 0 {
-		allErrs[util.CRDComponent] = err
+		allErrs[util.DeploymentComponent] = err
 	}
 
-	err = d.undeployServiceAccounts()
+	err = d.undeployPods()
 	if len(err) > 0 {
-		allErrs[util.ServiceAccountComponent] = err
+		allErrs[util.PodComponent] = err
+	}
+
+	err = d.undeployReplicationControllers()
+	if len(err) > 0 {
+		allErrs[util.ReplicationControllerComponent] = err
+	}
+
+	err = d.undeploySecrets()
+	if len(err) > 0 {
+		allErrs[util.SecretComponent] = err
+	}
+
+	err = d.undeployConfigMaps()
+	if len(err) > 0 {
+		allErrs[util.ConfigMapComponent] = err
 	}
 
 	errMap := d.undeployRBAC()
@@ -521,34 +536,19 @@ func (d *Deployer) Undeploy() error {
 		}
 	}
 
-	err = d.undeployConfigMaps()
+	err = d.undeployServiceAccounts()
 	if len(err) > 0 {
-		allErrs[util.ConfigMapComponent] = err
+		allErrs[util.ServiceAccountComponent] = err
 	}
 
-	err = d.undeploySecrets()
+	err = d.undeployCRDs()
 	if len(err) > 0 {
-		allErrs[util.SecretComponent] = err
+		allErrs[util.CRDComponent] = err
 	}
 
-	err = d.undeployReplicationControllers()
+	err = d.undeployNamespaces()
 	if len(err) > 0 {
-		allErrs[util.ReplicationControllerComponent] = err
-	}
-
-	err = d.undeployPods()
-	if len(err) > 0 {
-		allErrs[util.PodComponent] = err
-	}
-
-	err = d.undeployDeployments()
-	if len(err) > 0 {
-		allErrs[util.DeploymentComponent] = err
-	}
-
-	err = d.undeployServices()
-	if len(err) > 0 {
-		allErrs[util.ServiceComponent] = err
+		allErrs[util.NamespaceComponent] = err
 	}
 
 	return utilserror.NewDeployErrors(allErrs)
@@ -571,13 +571,8 @@ func (d *Deployer) undeployServiceAccounts() []error {
 	errs := []error{}
 
 	for name, saObj := range d.serviceAccounts {
-		wrapper := &shorttypes.ServiceAccountWrapper{ServiceAccount: *saObj}
-		sa, err := converters.Convert_Koki_ServiceAccount_to_Kube_ServiceAccount(wrapper)
-		if err != nil {
-			errs = append(errs, err)
-		}
 		log.Infof("Deleting service account %s", name)
-		err = d.client.Core().ServiceAccounts(sa.Namespace).Delete(name, &meta_v1.DeleteOptions{})
+		err := d.client.Core().ServiceAccounts(saObj.Namespace).Delete(name, &meta_v1.DeleteOptions{})
 		if err != nil {
 			errs = append(errs, err)
 		}
@@ -610,13 +605,8 @@ func (d *Deployer) undeployConfigMaps() []error {
 	errs := []error{}
 
 	for name, cmObj := range d.configMaps {
-		wrapper := &shorttypes.ConfigMapWrapper{ConfigMap: *cmObj}
-		cm, err := converters.Convert_Koki_ConfigMap_to_Kube_v1_ConfigMap(wrapper)
-		if err != nil {
-			errs = append(errs, err)
-		}
 		log.Infof("Deleting config map %s", name)
-		err = d.client.Core().ConfigMaps(cm.Namespace).Delete(name, &meta_v1.DeleteOptions{})
+		err := d.client.Core().ConfigMaps(cmObj.Namespace).Delete(name, &meta_v1.DeleteOptions{})
 		if err != nil {
 			errs = append(errs, err)
 		}
@@ -628,13 +618,8 @@ func (d *Deployer) undeploySecrets() []error {
 	errs := []error{}
 
 	for name, secretObj := range d.secrets {
-		wrapper := &shorttypes.SecretWrapper{Secret: *secretObj}
-		secret, err := converters.Convert_Koki_Secret_to_Kube_v1_Secret(wrapper)
-		if err != nil {
-			errs = append(errs, err)
-		}
 		log.Infof("Deleting secret %s", name)
-		err = d.client.Core().Secrets(secret.Namespace).Delete(name, &meta_v1.DeleteOptions{})
+		err := d.client.Core().Secrets(secretObj.Namespace).Delete(name, &meta_v1.DeleteOptions{})
 		if err != nil {
 			errs = append(errs, err)
 		}
@@ -646,14 +631,8 @@ func (d *Deployer) undeployReplicationControllers() []error {
 	errs := []error{}
 
 	for name, rcObj := range d.replicationControllers {
-		wrapper := &shorttypes.ReplicationControllerWrapper{ReplicationController: *rcObj}
-		rc, err := converters.Convert_Koki_ReplicationController_to_Kube_v1_ReplicationController(wrapper)
-		if err != nil {
-			errs = append(errs, err)
-		}
-
 		log.Infof("Deleting replication controller %s", name)
-		err = d.client.Core().ReplicationControllers(rc.Namespace).Delete(name, &meta_v1.DeleteOptions{})
+		err := d.client.Core().ReplicationControllers(rcObj.Namespace).Delete(name, &meta_v1.DeleteOptions{})
 		if err != nil {
 			errs = append(errs, err)
 		}
@@ -665,14 +644,8 @@ func (d *Deployer) undeployPods() []error {
 	errs := []error{}
 
 	for name, pObj := range d.pods {
-		wrapper := &shorttypes.PodWrapper{Pod: *pObj}
-		pod, err := converters.Convert_Koki_Pod_to_Kube_v1_Pod(wrapper)
-		if err != nil {
-			errs = append(errs, err)
-		}
-
 		log.Infof("Deleting pod %s", name)
-		err = d.client.Core().Pods(pod.Namespace).Delete(name, &meta_v1.DeleteOptions{})
+		err := d.client.Core().Pods(pObj.Namespace).Delete(name, &meta_v1.DeleteOptions{})
 		if err != nil {
 			errs = append(errs, err)
 		}
@@ -684,15 +657,9 @@ func (d *Deployer) undeployDeployments() []error {
 	errs := []error{}
 
 	for name, dObj := range d.deployments {
-		wrapper := &shorttypes.DeploymentWrapper{Deployment: *dObj}
-		deploy, err := converters.Convert_Koki_Deployment_to_Kube_apps_v1beta2_Deployment(wrapper)
-		if err != nil {
-			errs = append(errs, err)
-		}
-
 		log.Infof("Deleting deployment %s", name)
 		propagationPolicy := meta_v1.DeletePropagationBackground
-		err = d.client.AppsV1beta2().Deployments(deploy.Namespace).Delete(name, &meta_v1.DeleteOptions{
+		err := d.client.AppsV1beta2().Deployments(dObj.Namespace).Delete(name, &meta_v1.DeleteOptions{
 			PropagationPolicy: &propagationPolicy,
 		})
 		if err != nil {
@@ -706,14 +673,8 @@ func (d *Deployer) undeployServices() []error {
 	errs := []error{}
 
 	for name, svcObj := range d.services {
-		sWrapper := &shorttypes.ServiceWrapper{Service: *svcObj}
-		svc, err := converters.Convert_Koki_Service_To_Kube_v1_Service(sWrapper)
-		if err != nil {
-			errs = append(errs, err)
-		}
-
 		log.Infof("Deleting service %s", name)
-		err = d.client.Core().Services(svc.Namespace).Delete(name, &meta_v1.DeleteOptions{})
+		err := d.client.Core().Services(svcObj.Namespace).Delete(name, &meta_v1.DeleteOptions{})
 		if err != nil {
 			errs = append(errs, err)
 		}
