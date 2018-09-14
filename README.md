@@ -1,10 +1,10 @@
 # Horizon
 
-Horizon is an application framwork for horizontal scaling, monitoring, and terse descriptions of complex, distributed systems running in a Cloud Native environment.
+Horizon is an application framework for horizontal scaling, monitoring, and terse descriptions of complex, distributed systems running in a Cloud Native environment.
 
 # Why another Kubernetes application framework? 
 
-Horizon was built based on ideas from the CoreOS operators framework, the Coki (short) framework for succinct Kubernetes app definitions, and Black Duck's 'protoform' framework for imperative deployment of the Perceptor platform.
+Horizon was built based on ideas from the CoreOS operators framework, the Koki (short) framework for succinct Kubernetes app definitions, and Black Duck's 'protoform' framework for imperative deployment of the Perceptor platform.
 
 It doesn't represent a competitor to any of the above platforms, but rather, an opinionated cloud-native deployment platform that is aligned with a proscriptive model for how one would define, and maintain, a distributed application in a Kubernetes or OpenShift environment.
 
