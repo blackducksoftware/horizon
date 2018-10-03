@@ -29,8 +29,8 @@
   name = "github.com/koki/short"
 
 [[constraint]]
-  branch = "master"
   name = "k8s.io/apiextensions-apiserver"
+  revision = "e798125b68b9e62ce80c2b4f1157e96da7b3b1c7"
 
 [[override]]
   name = "k8s.io/api"
@@ -39,6 +39,10 @@
 [[constraint]]
   name = "k8s.io/apimachinery"
   revision = "94ebb086c69b9fec4ddbfb6a1433d28ecca9292b"
+
+[[override]]
+  name = "k8s.io/kube-aggregator"
+  revision = "29c7989121fc30258c674f31aff9bbd393dfab5e"
 
 [prune]
   go-tests = true
