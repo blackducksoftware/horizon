@@ -141,17 +141,13 @@ func (c *Container) AddVolumeMount(config api.VolumeMountConfig) error {
 	}
 
 	if config.Propagation != nil {
-		var propagation types.MountPropagation
 		switch *config.Propagation {
 		case api.MountPropagationHostToContainer:
-			propagation = types.MountPropagationHostToContainer
-			vm.Propagation = &propagation
+			vm.Propagation = types.MountPropagationHostToContainer
 		case api.MountPropagationBidirectional:
-			propagation = types.MountPropagationBidirectional
-			vm.Propagation = &propagation
+			vm.Propagation = types.MountPropagationBidirectional
 		case api.MountPropagationNone:
-			propagation = types.MountPropagationNone
-			vm.Propagation = &propagation
+			vm.Propagation = types.MountPropagationNone
 		}
 	}
 
