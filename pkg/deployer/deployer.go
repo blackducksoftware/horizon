@@ -605,7 +605,7 @@ func (d *Deployer) undeployRBAC() map[util.ComponentType][]error {
 
 	for name := range d.clusterRoleBindings {
 		log.Infof("Deleting cluster role binding %s", name)
-		err := d.client.Rbac().ClusterRoleBindings().Delete(name,  &meta_v1.DeleteOptions{})
+		err := d.client.Rbac().ClusterRoleBindings().Delete(name, &meta_v1.DeleteOptions{})
 		if err != nil {
 			errs[util.ClusterRoleBindingComponent] = append(errs[util.ClusterRoleComponent], err)
 		}
@@ -706,4 +706,11 @@ func (d *Deployer) undeployNamespaces() []error {
 	}
 
 	return errs
+}
+
+func (d *Deployer) Export() []string {
+	yamls := []string{}
+	for _, pod := range d.pods {
+		converters.Convert_Koki_Pod_to_Kube_v1_Pod(pod)
+	}
 }
