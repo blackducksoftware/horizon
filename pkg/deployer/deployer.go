@@ -725,7 +725,6 @@ func (d *Deployer) Export() map[string]string {
 	ser := json.NewYAMLSerializer(json.DefaultMetaFactory, scheme.Scheme,
 		scheme.Scheme)
 	m := map[string]string{}
-
 	// append more yaml
 	appender := func(s string, obj runtime.Object) {
 		buf := bytes.NewBufferString("")
@@ -735,7 +734,6 @@ func (d *Deployer) Export() map[string]string {
 		}
 		m[s] = fmt.Sprintf("%v \n---", buf.String())
 	}
-
 	for s, krc := range d.replicationControllers {
 		rcw := &shorttypes.ReplicationControllerWrapper{
 			ReplicationController: *krc,
@@ -771,6 +769,26 @@ func (d *Deployer) Export() map[string]string {
 		rc, _ := converters.Convert_Koki_Namespace_to_Kube_Namespace(rcw)
 		appender(s, rc)
 	}
-
+	for s, krc := range d.serviceAccounts {
+		rcw := &shorttypes.ServiceAccountWrapper{
+			ServiceAccount: *krc,
+		}
+		rc, _ := converters.Convert_Koki_ServiceAccount_to_Kube_ServiceAccount(rcw)
+		appender(s, rc)
+	}
+	for s, krc := range d.clusterRoleBindings {
+		rcw := &shorttypes.ClusterRoleBindingWrapper{
+			ClusterRoleBinding: *krc,
+		}
+		rc, _ := converters.Convert_Koki_ClusterRoleBinding_to_Kube(rcw)
+		appender(s, rc)
+	}
+	for s, krc := range d.crds {
+		rcw := &shorttypes.CRDWrapper{
+			CRD: *krc,
+		}
+		rc, _ := converters.Convert_Koki_CRD_to_Kube(rcw)
+		appender(s, rc)
+	}
 	return m
 }
