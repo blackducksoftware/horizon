@@ -35,6 +35,7 @@ import (
 
 	"k8s.io/api/core/v1"
 	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer/json"
 
 	extensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
@@ -724,18 +725,52 @@ func (d *Deployer) Export() map[string]string {
 	ser := json.NewYAMLSerializer(json.DefaultMetaFactory, scheme.Scheme,
 		scheme.Scheme)
 	m := map[string]string{}
+
+	// append more yaml
+	appender := func(s string, obj runtime.Object) {
+		buf := bytes.NewBufferString("")
+		err := ser.Encode(obj, buf)
+		if err != nil {
+			panic(err)
+		}
+		m[s] = fmt.Sprintf("%v \n---", buf.String())
+	}
+
 	for s, krc := range d.replicationControllers {
 		rcw := &shorttypes.ReplicationControllerWrapper{
 			ReplicationController: *krc,
 		}
 		rc, _ := converters.Convert_Koki_ReplicationController_to_Kube_v1_ReplicationController(rcw)
-
-		buf := bytes.NewBufferString("")
-		err := ser.Encode(rc, buf)
-		if err != nil {
-			panic(err)
-		}
-		m[s] = fmt.Sprintf("%v", buf.String())
+		appender(s, rc)
 	}
+	for s, krc := range d.deployments {
+		rcw := &shorttypes.DeploymentWrapper{
+			Deployment: *krc,
+		}
+		rc, _ := converters.Convert_Koki_Deployment_to_Kube_apps_v1beta2_Deployment(rcw)
+		appender(s, rc)
+	}
+	for s, krc := range d.configMaps {
+		rcw := &shorttypes.ConfigMapWrapper{
+			ConfigMap: *krc,
+		}
+		rc, _ := converters.Convert_Koki_ConfigMap_to_Kube_v1_ConfigMap(rcw)
+		appender(s, rc)
+	}
+	for s, krc := range d.secrets {
+		rcw := &shorttypes.SecretWrapper{
+			Secret: *krc,
+		}
+		rc, _ := converters.Convert_Koki_Secret_to_Kube_v1_Secret(rcw)
+		appender(s, rc)
+	}
+	for s, krc := range d.namespaces {
+		rcw := &shorttypes.NamespaceWrapper{
+			Namespace: *krc,
+		}
+		rc, _ := converters.Convert_Koki_Namespace_to_Kube_Namespace(rcw)
+		appender(s, rc)
+	}
+
 	return m
 }
