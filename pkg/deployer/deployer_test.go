@@ -23,10 +23,6 @@ package deployer
 
 import (
 	"fmt"
-	"testing"
-	"time"
-
-	"github.com/blackducksoftware/horizon/pkg/api"
 )
 
 type errorController struct {
@@ -35,27 +31,4 @@ type errorController struct {
 
 func (e *errorController) Run(stopCh chan struct{}) error {
 	return fmt.Errorf("%s: Error", e.Name)
-}
-
-func TestMultipleControllerErrors(t *testing.T) {
-	name1 := "controller1"
-	name2 := "controller2"
-	controller1 := errorController{Name: name1}
-	controller2 := errorController{Name: name2}
-	d := Deployer{}
-	d.controllers = map[string]api.DeployerControllerInterface{name1: &controller1, name2: &controller2}
-	stopCh := make(chan struct{})
-	errCh := make(chan map[string][]error)
-	go func() {
-		controllerErrs := d.StartControllers(stopCh)
-		errCh <- controllerErrs
-	}()
-	time.Sleep(1 * time.Second)
-	close(stopCh)
-	errs := <-errCh
-	for _, n := range []string{name1, name2} {
-		if len(errs[n]) != 1 {
-			t.Errorf("expected error from controller %s", n)
-		}
-	}
 }

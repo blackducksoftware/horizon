@@ -22,6 +22,7 @@ under the License.
 package deployer
 
 import (
+	"bytes"
 	"fmt"
 
 	"github.com/blackducksoftware/horizon/pkg/api"
@@ -34,10 +35,12 @@ import (
 
 	"k8s.io/api/core/v1"
 	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime/serializer/json"
 
 	extensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 
 	log "github.com/sirupsen/logrus"
@@ -66,16 +69,22 @@ type Deployer struct {
 
 // NewDeployer creates a Deployer object
 func NewDeployer(kubeconfig *rest.Config) (*Deployer, error) {
-	// creates the client
-	client, err := kubernetes.NewForConfig(kubeconfig)
-	if err != nil {
-		return nil, fmt.Errorf("error creating the kubernetes client: %v", err)
-	}
-
-	// creates the extensions client
-	extensions, err := extensionsclient.NewForConfig(kubeconfig)
-	if err != nil {
-		return nil, fmt.Errorf("error creating the kubernetes api extensions client: %v", err)
+	var err error
+	var client *kubernetes.Clientset
+	var extensions *extensionsclient.Clientset
+	if kubeconfig == nil {
+		err = fmt.Errorf("Skipping kubeconfig.  Most operations won't work, but some (like export) will.")
+	} else {
+		// creates the client
+		client, err = kubernetes.NewForConfig(kubeconfig)
+		if err != nil {
+			err = fmt.Errorf("error creating the kubernetes client: %v", err)
+		}
+		// creates the extensions client
+		extensions, err = extensionsclient.NewForConfig(kubeconfig)
+		if err != nil {
+			err = fmt.Errorf("error creating the kubernetes api extensions client: %v", err)
+		}
 	}
 
 	d := Deployer{
@@ -95,7 +104,9 @@ func NewDeployer(kubeconfig *rest.Config) (*Deployer, error) {
 		controllers:         make(map[string]api.DeployerControllerInterface),
 		pvcs:                make(map[string]*shorttypes.PersistentVolumeClaim),
 	}
-	return &d, nil
+	// return a deployer even if error, because export or other functionality
+	// could still work even though the creation statements wont work.
+	return &d, err
 }
 
 // AddController will add a custom controller that will be run after all
@@ -708,9 +719,23 @@ func (d *Deployer) undeployNamespaces() []error {
 	return errs
 }
 
-func (d *Deployer) Export() []string {
-	yamls := []string{}
-	for _, pod := range d.pods {
-		converters.Convert_Koki_Pod_to_Kube_v1_Pod(pod)
+// Export returns api string objects for all types.
+func (d *Deployer) Export() map[string]string {
+	ser := json.NewYAMLSerializer(json.DefaultMetaFactory, scheme.Scheme,
+		scheme.Scheme)
+	m := map[string]string{}
+	for s, krc := range d.replicationControllers {
+		rcw := &shorttypes.ReplicationControllerWrapper{
+			ReplicationController: *krc,
+		}
+		rc, _ := converters.Convert_Koki_ReplicationController_to_Kube_v1_ReplicationController(rcw)
+
+		buf := bytes.NewBufferString("")
+		err := ser.Encode(rc, buf)
+		if err != nil {
+			panic(err)
+		}
+		m[s] = fmt.Sprintf("%v", buf.String())
 	}
+	return m
 }
