@@ -5,6 +5,8 @@ import (
 	"strings"
 
 	horizonapi "github.com/blackducksoftware/horizon/pkg/api"
+	"github.com/blackducksoftware/horizon/pkg/deployer"
+	"k8s.io/client-go/rest"
 
 	"github.com/blackducksoftware/horizon/pkg/components"
 )
@@ -110,5 +112,19 @@ func CreateReplicationController(replicationControllerConfig *horizonapi.Replica
 func CreateReplicationControllerFromContainer(replicationControllerConfig *horizonapi.ReplicationControllerConfig, serviceAccount string, containers []*Container, volumes []*components.Volume, initContainers []*Container, affinityConfigs []horizonapi.AffinityConfig) *components.ReplicationController {
 	pod := CreatePod(replicationControllerConfig.Name, serviceAccount, volumes, containers, initContainers, affinityConfigs)
 	rc := CreateReplicationController(replicationControllerConfig, pod)
+	return rc
+}
+
+// NewDeployerWithDefaultKubeConfig: So you dont have to make a rest config if
+// you just want to compile some horizon examples.
+func NewDeployerWithDefaultKubeconfig() (*deployer.Deployer, error) {
+	rc := &rest.Config{}
+	return deployer.NewDeployer(rc)
+}
+
+// NewRestConfig: So you dont have to figure out the right way
+// to import the kube client.
+func NewRestConfig() *rest.Config {
+	rc := &rest.Config{}
 	return rc
 }
