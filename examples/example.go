@@ -22,7 +22,7 @@ type Container struct {
 	LivenessProbeConfigs  []*horizonapi.ProbeConfig
 }
 
-// CreatePod will create the pod
+// CreatePod will create a pod to be used later in an RC or deployment, syntactic sugar.
 func CreatePod(name string, serviceAccount string, volumes []*components.Volume, containers []*Container, initContainers []*Container, affinityConfigs []horizonapi.AffinityConfig) *components.Pod {
 	pod := components.NewPod(horizonapi.PodConfig{
 		Name: name,
@@ -67,7 +67,7 @@ func CreatePod(name string, serviceAccount string, volumes []*components.Volume,
 	return pod
 }
 
-// CreateContainer will create the container
+// CreateContainer will create a container to be used later in a deployment or rc.  Syntactic sugar.
 func CreateContainer(config *horizonapi.ContainerConfig, envs []*horizonapi.EnvConfig, volumeMounts []*horizonapi.VolumeMountConfig, port *horizonapi.PortConfig,
 	actionConfig *horizonapi.ActionConfig, livenessProbeConfigs []*horizonapi.ProbeConfig, readinessProbeConfigs []*horizonapi.ProbeConfig) *components.Container {
 
@@ -97,7 +97,7 @@ func CreateContainer(config *horizonapi.ContainerConfig, envs []*horizonapi.EnvC
 	return container
 }
 
-// CreateReplicationController will create a replication controller
+// CreateReplicationController will create a replication controller with minimal syntax
 func CreateReplicationController(replicationControllerConfig *horizonapi.ReplicationControllerConfig, pod *components.Pod) *components.ReplicationController {
 	rc := components.NewReplicationController(*replicationControllerConfig)
 	rc.AddLabelSelectors(map[string]string{
@@ -115,7 +115,7 @@ func CreateReplicationControllerFromContainer(replicationControllerConfig *horiz
 	return rc
 }
 
-// NewDeployerWithDefaultKubeConfig: So you dont have to make a rest config if
+// NewDeployerWithDefaultKubeConfig: So you dont have to make a rest config if 
 // you just want to compile some horizon examples.
 func NewDeployerWithDefaultKubeconfig() (*deployer.Deployer, error) {
 	rc := &rest.Config{}
