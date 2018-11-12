@@ -18,6 +18,7 @@ It doesn't represent a competitor to any of the above platforms, but rather, an 
 - Horizon apps ship with a Prometheus implementation (coming soon).
 - Horizon apps enforce an idiom wherein you ship exactly one container, and only one container.
 - Horizon apps separate the *creation* of your app from the *maintainance* of it over time, rather then forcing you to conform to watch semantics (as a raw controller or operator would do).
+- Horizon apps can be used to quickly put together an *operator* which can be deployed via Helm, so, this entire bulleted list is a false trichotimy :).
 
 # How do I use it?
 
