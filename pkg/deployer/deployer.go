@@ -682,7 +682,10 @@ func (d *Deployer) undeployReplicationControllers() []error {
 
 	for name, rcObj := range d.replicationControllers {
 		log.Infof("Deleting replication controller %s", name)
-		err := d.client.Core().ReplicationControllers(rcObj.Namespace).Delete(name, &meta_v1.DeleteOptions{})
+		propagationPolicy := meta_v1.DeletePropagationBackground
+		err := d.client.Core().ReplicationControllers(rcObj.Namespace).Delete(name, &meta_v1.DeleteOptions{
+			PropagationPolicy: &propagationPolicy,
+		})
 		if err != nil {
 			errs = append(errs, err)
 		}
