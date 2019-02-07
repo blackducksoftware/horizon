@@ -25,7 +25,7 @@ It doesn't represent a competitor to any of the above platforms, but rather, an 
 - Vendor Horizon into your Golang app.
 - Programmatically define an application that will be deployed to a Kubernetes-based cluster using the objects we provide, using the objects in this repository.  
 - Start the Horizon deployer from inside your own Golang-based container.
-- Optionally send a controller that will be run after all defined parts of the application are deployed succesfully.
+- Optionally send a controller that will be run after all defined parts of the application are deployed successfully.
 
 ## License
 
