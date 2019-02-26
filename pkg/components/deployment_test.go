@@ -29,10 +29,11 @@ import (
 )
 
 func TestDeploymentAddPod(t *testing.T) {
+	replicas := int32(1)
 	d := NewDeployment(api.DeploymentConfig{
 		Name:      "test",
 		Namespace: "testns",
-		Replicas:  1,
+		Replicas:  &replicas,
 	})
 	pc := api.PodConfig{
 		Name:           "pod",
