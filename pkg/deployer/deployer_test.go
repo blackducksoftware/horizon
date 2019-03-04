@@ -27,13 +27,17 @@ import (
 	"time"
 
 	"github.com/blackducksoftware/horizon/pkg/api"
+
+	"k8s.io/client-go/kubernetes"
+
+	extensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 )
 
 type errorController struct {
 	Name string
 }
 
-func (e *errorController) Run(stopCh chan struct{}) error {
+func (e *errorController) Run(api.ControllerResources, chan struct{}) error {
 	return fmt.Errorf("%s: Error", e.Name)
 }
 
@@ -44,6 +48,8 @@ func TestMultipleControllerErrors(t *testing.T) {
 	controller2 := errorController{Name: name2}
 	d := Deployer{}
 	d.controllers = map[string]api.DeployerControllerInterface{name1: &controller1, name2: &controller2}
+	d.client = &kubernetes.Clientset{}
+	d.apiextensions = &extensionsclient.Clientset{}
 	stopCh := make(chan struct{})
 	errCh := make(chan map[string][]error)
 	go func() {
