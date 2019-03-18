@@ -108,7 +108,7 @@ func (s *StatefulSet) AddPod(obj *Pod) error {
 	o := obj.GetObj()
 	s.obj.TemplateMetadata = &o.PodTemplateMeta
 	s.obj.PodTemplate = o.PodTemplate
-
+	s.AddMatchLabelsSelectors(o.PodTemplateMeta.Labels)
 	return nil
 }
 
