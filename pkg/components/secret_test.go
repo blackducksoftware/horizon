@@ -38,15 +38,15 @@ func TestAddData(t *testing.T) {
 	data := map[string][]byte{"key1": []byte("data")}
 	s.AddData(data)
 	for k, v := range data {
-		if objv, ok := s.obj.Data[k]; !ok {
+		if objv, ok := s.Data[k]; !ok {
 			t.Errorf("%s key missing", k)
 		} else if bytes.Compare(objv, v) != 0 {
 			t.Errorf("expected %v got %v", v, objv)
 		}
 	}
 	delete(data, "key1")
-	if !(len(s.obj.Data) > 0) {
-		t.Errorf("expected %d got %d", len(data), len(s.obj.Data))
+	if !(len(s.Data) > 0) {
+		t.Errorf("expected %d got %d", len(data), len(s.Data))
 	}
 }
 
@@ -59,14 +59,14 @@ func TestAddStringData(t *testing.T) {
 	data := map[string]string{"key1": "data"}
 	s.AddStringData(data)
 	for k, v := range data {
-		if objv, ok := s.obj.StringData[k]; !ok {
+		if objv, ok := s.StringData[k]; !ok {
 			t.Errorf("%s key missing", k)
 		} else if strings.Compare(objv, v) != 0 {
 			t.Errorf("expected %v got %v", v, objv)
 		}
 	}
 	delete(data, "key1")
-	if !(len(s.obj.StringData) > 0) {
-		t.Errorf("expected %d got %d", len(data), len(s.obj.Data))
+	if !(len(s.StringData) > 0) {
+		t.Errorf("expected %d got %d", len(data), len(s.Data))
 	}
 }

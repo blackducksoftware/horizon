@@ -19,29 +19,13 @@ specific language governing permissions and limitations
 under the License.
 */
 
-package util
+package api
 
-// MapMerge merges two maps together and returns the results.
-// If both maps contain the same key, then the value of the
-// existing key will be overwritten with the value from the new map
-func MapMerge(base map[string]string, new map[string]string) map[string]string {
-	newMap := make(map[string]string)
-	if base != nil {
-		for k, v := range base {
-			newMap[k] = v
-		}
-	}
-	for k, v := range new {
-		newMap[k] = v
-	}
-	return newMap
-}
+// ProtocolType defines the type of protocols
+type ProtocolType int
 
-// RemoveElement will remove a key from a map if it exists and return
-// the map with the key removed
-func RemoveElement(data map[string]string, key string) map[string]string {
-	if _, exists := data[key]; exists {
-		delete(data, key)
-	}
-	return data
-}
+const (
+	ProtocolTCP ProtocolType = iota + 1
+	ProtocolUDP
+	ProtocolSCTP
+)

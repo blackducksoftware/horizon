@@ -21,25 +21,30 @@ under the License.
 
 package api
 
-// DeploymentConfig defines the basic configuration for a deployment
-type DeploymentConfig struct {
-	APIVersion              string
-	ClusterName             string
-	Name                    string
-	Namespace               string
-	Replicas                *int32
-	Strategy                DeploymentStrategyType
-	MaxUnavailable          string
-	MaxExtra                string
-	MinReadySeconds         int32
-	RevisionHistoryLimit    *int32
-	Paused                  bool
-	ProgressDeadlineSeconds *int32
+import (
+	extensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
+
+	"k8s.io/apimachinery/pkg/runtime"
+
+	"k8s.io/client-go/kubernetes"
+)
+
+// DeployerResources defines the resources the deployer will provide
+type DeployerResources struct {
+	KubeClient           *kubernetes.Clientset
+	KubeExtensionsClient *extensionsclient.Clientset
 }
 
-type DeploymentStrategyType int
+// DeployerControllerInterface defines the interface for controllers
+type DeployerControllerInterface interface {
+	Run(DeployerResources, chan struct{}) error
+}
 
-const (
-	DeploymentStrategyTypeRecreate DeploymentStrategyType = iota + 1
-	DeploymentStrategyTypeRollingUpdate
-)
+// DeployableComponentInterface defines an interface a component must support in order for the
+// deployer to deploy it
+type DeployableComponentInterface interface {
+	runtime.Object
+	GetName() string
+	Deploy(DeployerResources) error
+	Undeploy(DeployerResources) error
+}

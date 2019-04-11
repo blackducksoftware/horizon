@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2018 Synopsys, Inc.
+Copyright (C) 2019 Synopsys, Inc.
 
 Licensed to the Apache Software Foundation (ASF) under one
 or more contributor license agreements. See the NOTICE file
@@ -21,19 +21,25 @@ under the License.
 
 package api
 
-import (
-	"k8s.io/client-go/kubernetes"
+// SelectorConfig defines the configuration for a selector
+type SelectorConfig struct {
+	Labels      map[string]string
+	Expressions []ExpressionRequirementConfig
+}
 
-	extensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
+// ExpressionRequirementConfig defines the configuration for an expression
+type ExpressionRequirementConfig struct {
+	Key    string
+	Op     ExpressionRequirementOp
+	Values []string
+}
+
+// A ExpressionRequirementOp is the set of operators that can be used in a selector requirement
+type ExpressionRequirementOp int
+
+const (
+	ExpressionRequirementOpIn ExpressionRequirementOp = iota + 1
+	ExpressionRequirementOpNotIn
+	ExpressionRequirementOpExists
+	ExpressionRequirementOpDoesNotExist
 )
-
-// ControllerResources defines the resources the deployer will provide controllers
-type ControllerResources struct {
-	KubeClient           *kubernetes.Clientset
-	KubeExtensionsClient *extensionsclient.Clientset
-}
-
-// DeployerControllerInterface defines the interface for controllers
-type DeployerControllerInterface interface {
-	Run(ControllerResources, chan struct{}) error
-}

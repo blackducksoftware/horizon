@@ -19,7 +19,7 @@ specific language governing permissions and limitations
 under the License.
 */
 
-package util
+package api
 
 // ComponentType defines the component type
 type ComponentType string
