@@ -29,7 +29,7 @@
   revision = "23def4e6c14b4da8ac2ed8007337bc5eb5007998"
 
 [[projects]]
-  digest = "1:4c0989ca0bcd10799064318923b9bc2db6b4d6338dd75f3f2d86c3511aaaf5cf"
+  digest = "1:239c4c7fd2159585454003d9be7207167970194216193a8a210b8d29576f19c9"
   name = "github.com/golang/protobuf"
   packages = [
     "proto",
@@ -39,8 +39,8 @@
     "ptypes/timestamp",
   ]
   pruneopts = "UT"
-  revision = "aa810b61a9c79d51363740d207bb46cf8e620ed5"
-  version = "v1.2.0"
+  revision = "b5d812f8a3706043e23a9cd5babf2e5423744d30"
+  version = "v1.3.1"
 
 [[projects]]
   branch = "master"
@@ -200,7 +200,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:a7e7d4a2763c58f27ccd9c712d073b3972ee8ba2780e652a8e918c7ef43149bf"
+  digest = "1:01831e6da6dfda2ea208bc4a153f6fb2fe02b0baec3af50f3b61c0d87d99a3f7"
   name = "golang.org/x/net"
   packages = [
     "http/httpguts",
@@ -209,7 +209,7 @@
     "idna",
   ]
   pruneopts = "UT"
-  revision = "fe579d43d83210096a79b46dcca0e3721058393a"
+  revision = "4829fb13d2c62012c17688fa7f629f371014946d"
 
 [[projects]]
   branch = "master"
