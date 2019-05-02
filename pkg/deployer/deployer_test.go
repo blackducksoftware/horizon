@@ -37,7 +37,7 @@ type errorController struct {
 	Name string
 }
 
-func (e *errorController) Run(api.ControllerResources, chan struct{}) error {
+func (e *errorController) Run(api.DeployerResources, chan struct{}) error {
 	return fmt.Errorf("%s: Error", e.Name)
 }
 

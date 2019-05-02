@@ -25,20 +25,20 @@
 #   unused-packages = true
 
 [[constraint]]
-  branch = "master"
-  name = "github.com/koki/short"
+  name = "k8s.io/apiextensions-apiserver"
+  version = "kubernetes-1.14.0"
 
 [[constraint]]
-  name = "k8s.io/apiextensions-apiserver"
-  revision = "e798125b68b9e62ce80c2b4f1157e96da7b3b1c7"
-
-[[override]]
   name = "k8s.io/api"
-  revision = "d216743eed4c3242b85d094d2a589f41a793652d"
+  version = "kubernetes-1.14.0"
 
 [[constraint]]
   name = "k8s.io/apimachinery"
-  revision = "94ebb086c69b9fec4ddbfb6a1433d28ecca9292b"
+  version = "kubernetes-1.14.0"
+
+[[constraint]]
+  name = "k8s.io/client-go"
+  version = "kubernetes-1.14.0"
 
 [prune]
   go-tests = true
