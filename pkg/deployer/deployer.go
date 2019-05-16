@@ -45,6 +45,8 @@ var deployOrder = []api.ComponentType{
 	api.ServiceAccountComponent,
 	api.ClusterRoleComponent,
 	api.ClusterRoleBindingComponent,
+	api.RoleComponent,
+	api.RoleBindingComponent,
 	api.ConfigMapComponent,
 	api.SecretComponent,
 	api.PersistentVolumeClaimComponent,
