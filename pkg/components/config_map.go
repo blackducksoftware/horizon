@@ -37,7 +37,7 @@ type ConfigMap struct {
 // NewConfigMap creates a ConfigMap object
 func NewConfigMap(config api.ConfigMapConfig) *ConfigMap {
 	version := "v1"
-	if len(version) > 0 {
+	if len(config.APIVersion) > 0 {
 		version = config.APIVersion
 	}
 

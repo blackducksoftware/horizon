@@ -33,6 +33,8 @@ const (
 	ServiceAccountComponent          ComponentType = "ServiceAccount"
 	ClusterRoleComponent             ComponentType = "ClusterRole"
 	ClusterRoleBindingComponent      ComponentType = "ClusterRoleBinding"
+	RoleComponent                    ComponentType = "Role"
+	RoleBindingComponent             ComponentType = "RoleBinding"
 	ReplicationControllerComponent   ComponentType = "ReplicationController"
 	CRDComponent                     ComponentType = "CustomResourceDefinition"
 	Controller                       ComponentType = "Controller"
