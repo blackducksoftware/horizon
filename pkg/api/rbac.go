@@ -73,7 +73,8 @@ type SubjectConfig struct {
 
 // RoleRefConfig defines the configuration for a role reference
 type RoleRefConfig struct {
-	APIGroup string
-	Kind     string
-	Name     string
+	APIGroup  string
+	Kind      string
+	Name      string
+	Namespace string
 }
