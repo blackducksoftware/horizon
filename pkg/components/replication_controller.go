@@ -47,7 +47,7 @@ func NewReplicationController(config api.ReplicationControllerConfig) *Replicati
 
 	rc := v1.ReplicationController{
 		TypeMeta: metav1.TypeMeta{
-			Kind:       "ReplicatonController",
+			Kind:       "ReplicationController",
 			APIVersion: version,
 		},
 		ObjectMeta: metav1.ObjectMeta{
