@@ -76,11 +76,11 @@ func NewPersistentVolumeClaim(config api.PVCConfig) (*PersistentVolumeClaim, err
 	switch config.Mode {
 	case api.PVCModeBLock:
 		volumeMode = v1.PersistentVolumeBlock
+		pvc.Spec.VolumeMode = &volumeMode
 	case api.PVCModeFilesystem:
 		volumeMode = v1.PersistentVolumeFilesystem
+		pvc.Spec.VolumeMode = &volumeMode
 	}
-
-	pvc.Spec.VolumeMode = &volumeMode
 
 	if config.DataSourceAPIGroup != nil || len(config.DataSourceKind) != 0 || len(config.DataSourceName) != 0 {
 		pvc.Spec.DataSource = &v1.TypedLocalObjectReference{
