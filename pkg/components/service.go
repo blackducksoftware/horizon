@@ -53,11 +53,7 @@ func NewService(config api.ServiceConfig) *Service {
 			Kind:       "Service",
 			APIVersion: version,
 		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:        config.Name,
-			Namespace:   config.Namespace,
-			ClusterName: config.ClusterName,
-		},
+		ObjectMeta: generateObjectMeta(config.Name, config.Namespace, config.ClusterName),
 		Spec: v1.ServiceSpec{
 			ClusterIP:                config.ClusterIP,
 			ExternalName:             config.ExternalName,

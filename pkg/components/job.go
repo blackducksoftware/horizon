@@ -49,11 +49,7 @@ func NewJob(config api.JobConfig) *Job {
 			Kind:       "Job",
 			APIVersion: version,
 		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:        config.Name,
-			Namespace:   config.Namespace,
-			ClusterName: config.ClusterName,
-		},
+		ObjectMeta: generateObjectMeta(config.Name, config.Namespace, config.ClusterName),
 		Spec: v1.JobSpec{
 			Parallelism:             config.Parallelism,
 			Completions:             config.Completions,

@@ -49,11 +49,7 @@ func NewSecret(config api.SecretConfig) *Secret {
 			Kind:       "Secret",
 			APIVersion: version,
 		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:        config.Name,
-			Namespace:   config.Namespace,
-			ClusterName: config.ClusterName,
-		},
+		ObjectMeta: generateObjectMeta(config.Name, config.Namespace, config.ClusterName),
 	}
 
 	switch config.Type {

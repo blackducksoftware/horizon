@@ -51,11 +51,7 @@ func NewServiceAccount(config api.ServiceAccountConfig) *ServiceAccount {
 			Kind:       "ServiceAccount",
 			APIVersion: version,
 		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:        config.Name,
-			Namespace:   config.Namespace,
-			ClusterName: config.ClusterName,
-		},
+		ObjectMeta:                   generateObjectMeta(config.Name, config.Namespace, config.ClusterName),
 		AutomountServiceAccountToken: config.AutomountToken,
 	}
 

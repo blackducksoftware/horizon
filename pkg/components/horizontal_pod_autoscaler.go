@@ -47,11 +47,7 @@ func NewHorizontalPodAutoscaler(config api.HPAConfig) *HorizontalPodAutoscaler {
 			Kind:       "HorizontalPodAutoscaler",
 			APIVersion: version,
 		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:        config.Name,
-			Namespace:   config.Namespace,
-			ClusterName: config.ClusterName,
-		},
+		ObjectMeta: generateObjectMeta(config.Name, config.Namespace, config.ClusterName),
 		Spec: v1.HorizontalPodAutoscalerSpec{
 			ScaleTargetRef: v1.CrossVersionObjectReference{
 				Kind:       config.ScaleTargetKind,
