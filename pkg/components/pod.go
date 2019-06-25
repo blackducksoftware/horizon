@@ -50,11 +50,7 @@ func NewPod(config api.PodConfig) *Pod {
 			Kind:       "Pod",
 			APIVersion: version,
 		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:        config.Name,
-			Namespace:   config.Namespace,
-			ClusterName: config.ClusterName,
-		},
+		ObjectMeta: generateObjectMeta(config.Name, config.Namespace, config.ClusterName),
 		Spec: v1.PodSpec{
 			TerminationGracePeriodSeconds: config.TerminationGracePeriod,
 			ActiveDeadlineSeconds:         config.ActiveDeadline,

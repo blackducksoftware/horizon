@@ -49,11 +49,7 @@ func NewClusterRoleBinding(config api.ClusterRoleBindingConfig) *ClusterRoleBind
 			Kind:       "ClusterRoleBinding",
 			APIVersion: version,
 		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:        config.Name,
-			Namespace:   config.Namespace,
-			ClusterName: config.ClusterName,
-		},
+		ObjectMeta: generateObjectMeta(config.Name, config.Namespace, config.ClusterName),
 	}
 
 	return &ClusterRoleBinding{&crb, MetadataFuncs{&crb}}

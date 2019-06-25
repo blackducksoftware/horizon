@@ -49,11 +49,7 @@ func NewDeployment(config api.DeploymentConfig) *Deployment {
 			Kind:       "Deployment",
 			APIVersion: version,
 		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:        config.Name,
-			Namespace:   config.Namespace,
-			ClusterName: config.ClusterName,
-		},
+		ObjectMeta: generateObjectMeta(config.Name, config.Namespace, config.ClusterName),
 		Spec: v1.DeploymentSpec{
 			Replicas:                config.Replicas,
 			MinReadySeconds:         config.MinReadySeconds,

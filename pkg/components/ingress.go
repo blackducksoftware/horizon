@@ -51,11 +51,7 @@ func NewIngress(config api.IngressConfig) (*Ingress, error) {
 			Kind:       "HorizontalPodAutoscaler",
 			APIVersion: version,
 		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:        config.Name,
-			Namespace:   config.Namespace,
-			ClusterName: config.ClusterName,
-		},
+		ObjectMeta: generateObjectMeta(config.Name, config.Namespace, config.ClusterName),
 	}
 
 	if len(config.ServiceName) > 0 || len(config.ServicePort) > 0 {

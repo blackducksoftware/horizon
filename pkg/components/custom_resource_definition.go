@@ -71,11 +71,7 @@ func NewCustomResourceDefintion(config api.CRDConfig) *CustomResourceDefinition 
 			Kind:       "CustomResourceDefinition",
 			APIVersion: version,
 		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:        config.Name,
-			Namespace:   config.Namespace,
-			ClusterName: config.ClusterName,
-		},
+		ObjectMeta: generateObjectMeta(config.Name, config.Namespace, config.ClusterName),
 		Spec: v1beta1.CustomResourceDefinitionSpec{
 			Group:   config.Group,
 			Version: config.CRDVersion,

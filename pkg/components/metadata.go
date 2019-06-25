@@ -29,6 +29,17 @@ import (
 	"github.com/imdario/mergo"
 )
 
+func generateObjectMeta(name string, ns string, cn string) metav1.ObjectMeta {
+	return metav1.ObjectMeta{
+		Name:        name,
+		Namespace:   ns,
+		ClusterName: cn,
+		Annotations: make(map[string]string),
+		Labels:      make(map[string]string),
+		Finalizers:  make([]string, 0),
+	}
+}
+
 // MetadataFuncs defines some common metadata handling functions
 type MetadataFuncs struct {
 	obj metav1.Object

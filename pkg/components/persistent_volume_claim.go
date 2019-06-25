@@ -56,11 +56,7 @@ func NewPersistentVolumeClaim(config api.PVCConfig) (*PersistentVolumeClaim, err
 			Kind:       "PersistentVolumeClaim",
 			APIVersion: version,
 		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:        config.Name,
-			Namespace:   config.Namespace,
-			ClusterName: config.ClusterName,
-		},
+		ObjectMeta: generateObjectMeta(config.Name, config.Namespace, config.ClusterName),
 		Spec: v1.PersistentVolumeClaimSpec{
 			Resources: v1.ResourceRequirements{
 				Requests: v1.ResourceList{
